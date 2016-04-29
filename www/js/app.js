@@ -36,14 +36,33 @@ angular.module('mychat', ['ionic', 'mychat.controllers', 'mychat.services', 'fir
   .state('login', {
     url: "/login",
     templateUrl: "templates/login.html",
-    controller: 'LoginCtrl'
+    controller: 'LoginCtrl',
+    resolve: {
+      //controller will not be loaded unti $requireAuth resolve
+      // Auth refers to our $firebaseAuth wrapper in the example above 
+      "currentAuth": ["Auth",
+        function (Auth) {
+          // $requireAuth returns promise so the resolve waits for it to complete
+          return Auth.$waitForAuth();
+      }]
+    }
   })
 
   // setup an abstract state for the tabs directive
   .state('tab', {
     url: '/tab',
     abstract: true,
-    templateUrl: 'templates/tabs.html'
+    templateUrl: 'templates/tabs.html',
+    resolve: {
+      //controller will not be loaded unti $requireAuth resolve
+      // Auth refers to our $firebaseAuth wrapper in the example above 
+      "currentAuth": ["Auth",
+        function (Auth) {
+          // $requireAuth returns promise so the resolve waits for it to complete
+          // If the promise is rejected, it will throw a $stateChangeError (see above)
+          return Auth.$requireAuth();
+      }]
+    }
   })
 
   // Each tab has its own nav history stack:
