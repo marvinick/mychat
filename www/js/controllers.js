@@ -66,13 +66,39 @@ angular.module('mychat.controllers', [])
   }
 })
 
-.controller('ChatCtrl', function($scope, Chats) {
+.controller('ChatCtrl', function($scope, Chats, $state) {
   console.log("Chat Controller initialized");
-  $scope.chats = Chats.all();
+  $scope.IM = {
+    textMessage: ""
+  }; 
+
+  Chats.selectRoom($state.params.roomId);
+
+  //fetching chat records only if a room is selected
+  if (roomName) {
+    $scope.roomName = " - " + roomName;
+    $scope.chats = Chats.all();
+  }
+  
+  $scope.sendMessage = function (msg) {
+    console.log(msg);
+    Chats.send($scope.displayname, msg);
+    $scope.IM.textMessage = "";
+  }
+
+  $scope.remove = function (chat) {
+    Chats.remove(chat);
+  }
 })
 
-.controller('RoomsCtrl', function($scope, Rooms) {
+.controller('RoomsCtrl', function($scope, Rooms, Chats, $state) {
   console.log("Rooms Controller Initialized")
   $scope.rooms = Rooms.all();
+
+  $scope.openChatRoom = function (roomId) {
+    $state.go('tab.chat', {
+      roomId: roomId
+    });
+  }
 });
 
